@@ -88,13 +88,13 @@ public class ProspectingCraft extends BaseMod<ProspectingCraftClient> {
     protected void registerBlocks() {
         blockSeismicRecorder = newBlock("seismic_recorder", SeismicRecorderBlock.class);
         blockGeophone = addBlock("geophone", new BaseBlock(Material.wood, GeophoneTE.class));
-        blockGeophone.setModelAndTextures("geophone.smeg", "minecraft:jukebox_side", "minecraft:redstone_torch_on");
+        blockGeophone.setModelAndTextures("geophone.obj", "minecraft:jukebox_side", "minecraft:redstone_torch_on");
         blockGeophone.setOpaque(false);
         blockGSAKit = addBlock(
             "gsa_kit",
             new BaseBlock(Material.wood, BaseOrientation.orient4WaysByState, GSAKitTE.class));
         blockGSAKit.setOpaque(false);
-        blockGSAKit.setModelAndTextures("gsakit_open.smeg", "gsa_kit", "minecraft:glass_white");
+        blockGSAKit.setModelAndTextures("gsakit_open.obj", "gsa_kit", "minecraft:glass_white");
     }
 
     public static Item itemSeismicSurvey, itemSowsEar, itemGeologicalSample, itemProspectingPick, itemLitmusPaper,

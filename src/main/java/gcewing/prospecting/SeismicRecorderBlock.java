@@ -23,7 +23,7 @@ public class SeismicRecorderBlock extends BaseBlock<SeismicRecorderTE> {
         String tt = "seismic_recorder_top";
         String tf = "seismic_recorder_front";
         String ts = "seismic_recorder_side";
-        setModelAndTextures("cube.smeg", tb, tt, tf, ts);
+        setModelAndTextures("cube.obj", tb, tt, tf, ts);
     }
 
     @Override

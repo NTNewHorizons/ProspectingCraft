@@ -554,7 +554,10 @@ public class BaseMod<CLIENT extends BaseModClient<? extends BaseMod>> extends Ba
         ResourceLocation loc = modelLocation(name);
         IModel model = modelCache.get(loc);
         if (model == null) {
-            model = BaseModel.fromResource(loc);
+            if (name.endsWith(".obj"))
+                model = ObjModel.fromResource(loc);
+            else
+                model = BaseModel.fromResource(loc);
             modelCache.put(loc, model);
         }
         return model;
