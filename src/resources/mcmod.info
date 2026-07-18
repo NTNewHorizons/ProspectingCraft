@@ -1,0 +1,14 @@
+[{
+  "modid": "${modid}",
+  "name": ProspectingCraft",
+  "description": "A few things to help you find ores.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "http://www.cosc.canterbury.ac.nz/greg.ewing/minecraft/mods/ProsopectingCraft/",
+  "updateUrl": "",
+  "authors": ["Greg Ewing"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}]
