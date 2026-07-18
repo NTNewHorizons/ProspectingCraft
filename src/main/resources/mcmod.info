@@ -6,7 +6,7 @@
 		"description": "A few things to help you find ores.",
 		"version": "${modVersion}",
 		"mcversion": "${minecraftVersion}",
-		"url": "http://www.cosc.canterbury.ac.nz/greg.ewing/minecraft/mods/ProsopectingCraft",
+		"url": "https://www.csse.canterbury.ac.nz/greg.ewing/minecraft/mods/ProspectingCraft/",
 		"updateUrl": "",
 		"authorList": ["Greg Ewing"],
 		"credits": "",
