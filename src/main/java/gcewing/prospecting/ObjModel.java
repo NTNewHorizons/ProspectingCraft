@@ -15,6 +15,7 @@ public class ObjModel implements IModel {
     public double[][] boxes;
 
     public static class Face {
+
         int texture;
         double[][] vertices;
         int[][] triangles;
@@ -24,8 +25,7 @@ public class ObjModel implements IModel {
     public static ObjModel fromResource(ResourceLocation location) {
         String path = String.format("/assets/%s/%s", location.getResourceDomain(), location.getResourcePath());
         InputStream in = ObjModel.class.getResourceAsStream(path);
-        if (in == null)
-            throw new RuntimeException(String.format("Cannot find resource %s", path));
+        if (in == null) throw new RuntimeException(String.format("Cannot find resource %s", path));
         ObjModel model = parse(in);
         model.prepare();
         return model;
@@ -53,28 +53,23 @@ public class ObjModel implements IModel {
                 if (line.isEmpty() || line.startsWith("#")) {
                     // Parse metadata from comments
                     if (line.startsWith("# bounds:")) {
-                        String[] parts = line.substring(9).trim().split("\\s+");
+                        String[] parts = line.substring(9)
+                            .trim()
+                            .split("\\s+");
                         if (parts.length == 6) {
-                            model.bounds = new double[]{
-                                Double.parseDouble(parts[0]),
-                                Double.parseDouble(parts[1]),
-                                Double.parseDouble(parts[2]),
-                                Double.parseDouble(parts[3]),
-                                Double.parseDouble(parts[4]),
-                                Double.parseDouble(parts[5])
-                            };
+                            model.bounds = new double[] { Double.parseDouble(parts[0]), Double.parseDouble(parts[1]),
+                                Double.parseDouble(parts[2]), Double.parseDouble(parts[3]),
+                                Double.parseDouble(parts[4]), Double.parseDouble(parts[5]) };
                         }
                     } else if (line.startsWith("# box:")) {
-                        String[] parts = line.substring(6).trim().split("\\s+");
+                        String[] parts = line.substring(6)
+                            .trim()
+                            .split("\\s+");
                         if (parts.length == 6) {
-                            boxList.add(new double[]{
-                                Double.parseDouble(parts[0]),
-                                Double.parseDouble(parts[1]),
-                                Double.parseDouble(parts[2]),
-                                Double.parseDouble(parts[3]),
-                                Double.parseDouble(parts[4]),
-                                Double.parseDouble(parts[5])
-                            });
+                            boxList.add(
+                                new double[] { Double.parseDouble(parts[0]), Double.parseDouble(parts[1]),
+                                    Double.parseDouble(parts[2]), Double.parseDouble(parts[3]),
+                                    Double.parseDouble(parts[4]), Double.parseDouble(parts[5]) });
                         }
                     }
                     continue;
@@ -123,10 +118,10 @@ public class ObjModel implements IModel {
                             // Parse v/vt/vn or v//vn or v
                             String[] indices = parts[i].split("/");
                             int vi = Integer.parseInt(indices[0]) - 1;
-                            int vti = indices.length > 1 && !indices[1].isEmpty()
-                                ? Integer.parseInt(indices[1]) - 1 : vi;
-                            int vni = indices.length > 2 && !indices[2].isEmpty()
-                                ? Integer.parseInt(indices[2]) - 1 : vi;
+                            int vti = indices.length > 1 && !indices[1].isEmpty() ? Integer.parseInt(indices[1]) - 1
+                                : vi;
+                            int vni = indices.length > 2 && !indices[2].isEmpty() ? Integer.parseInt(indices[2]) - 1
+                                : vi;
 
                             double x = vList.get(vi * 3);
                             double y = vList.get(vi * 3 + 1);
@@ -145,12 +140,12 @@ public class ObjModel implements IModel {
                                 v = vtList.get(vti * 2 + 1);
                             }
 
-                            curVerts.add(new double[]{x, y, z, nx, ny, nz, u, v});
+                            curVerts.add(new double[] { x, y, z, nx, ny, nz, u, v });
                             idx[i - 1] = curVerts.size() - 1;
                         }
                         // Triangulate: fan triangulation for n-gons
                         for (int i = 1; i < idx.length - 1; i++) {
-                            curTris.add(new int[]{idx[0], idx[i], idx[i + 1]});
+                            curTris.add(new int[] { idx[0], idx[i], idx[i + 1] });
                         }
                         break;
                     }
@@ -183,7 +178,7 @@ public class ObjModel implements IModel {
                 maxY = Math.max(maxY, vList.get(i + 1));
                 maxZ = Math.max(maxZ, vList.get(i + 2));
             }
-            model.bounds = new double[]{minX, minY, minZ, maxX, maxY, maxZ};
+            model.bounds = new double[] { minX, minY, minZ, maxX, maxY, maxZ };
         }
 
         return model;
@@ -207,8 +202,7 @@ public class ObjModel implements IModel {
 
     public void addBoxesToList(Trans3 t, List list) {
         if (boxes != null && boxes.length > 0) {
-            for (int i = 0; i < boxes.length; i++)
-                addBoxToList(boxes[i], t, list);
+            for (int i = 0; i < boxes.length; i++) addBoxToList(boxes[i], t, list);
         } else {
             addBoxToList(bounds, t, list);
         }

@@ -58,6 +58,7 @@ public class ProspectingCraft extends BaseMod<ProspectingCraftClient> {
     void configure() {
         super.configure();
         GSAKitTE.configure(config);
+        SeismicRecorderTE.configure(config);
     }
 
     @Mod.EventHandler

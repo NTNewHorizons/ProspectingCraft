@@ -32,6 +32,8 @@ public class SeismicRecorderTE extends BaseTileInventory implements ITickable {
 
     protected static int linkCheckInterval = 5 * 20; // ticks
 
+    protected static Set<String> oreWhitelist = new LinkedHashSet<>();
+
     public static enum ReadyStatus {
 
         RDY(false, "Ready"),
@@ -67,6 +69,16 @@ public class SeismicRecorderTE extends BaseTileInventory implements ITickable {
     protected int numGeophones;
     protected boolean geophonesOkay;
     protected int linkTimer;
+
+    public static void configure(BaseConfiguration cfg) {
+        oreWhitelist.clear();
+        if (cfg != null) {
+            for (String entry : cfg.getStringList("SeismicRecorder", "oreWhitelist")) {
+                String normalized = normalizeConfigEntry(entry);
+                if (!normalized.isEmpty()) oreWhitelist.add(normalized);
+            }
+        }
+    }
 
     public SeismicRecorderTE() {
         super();
@@ -328,7 +340,7 @@ public class SeismicRecorderTE extends BaseTileInventory implements ITickable {
             if (item != null) {
                 stack = new ItemStack(item, 1, meta);
                 // System.out.printf("SeismicRecorderTE.scanCoords: (%s, %s) block %s stack %s\n", x, z, block, stack);
-                b = getMapDataByteForStack(stack);
+                b = getMapDataByteForBlock(block, meta);
             }
             int priority;
             if (b >= 0) priority = 2;
@@ -357,37 +369,67 @@ public class SeismicRecorderTE extends BaseTileInventory implements ITickable {
         return getMapDataByteFromArray(hardnessToMapDataByte, h, 4.0f);
     }
 
+    protected int getMapDataByteForBlock(Block block, int metadata) {
+        if (!isBlockWhitelisted(block, metadata)) return -1;
+        MapColor color = block.getMapColor(metadata);
+        if (color != null) {
+            return (color.colorIndex * 4) + 1;
+        }
+        return -1;
+    }
+
+    protected static boolean isBlockWhitelisted(Block block, int metadata) {
+        if (block == null) return false;
+        if (oreWhitelist.isEmpty()) return false;
+        String registryName = normalizeConfigEntry(String.valueOf(Block.blockRegistry.getNameForObject(block)));
+        String unlocalizedName = normalizeConfigEntry(block.getUnlocalizedName());
+        if (oreWhitelist.contains(registryName) || oreWhitelist.contains(unlocalizedName)) return true;
+        Item item = Item.getItemFromBlock(block);
+        if (item != null) {
+            String itemRegistryName = normalizeConfigEntry(String.valueOf(Item.itemRegistry.getNameForObject(item)));
+            if (oreWhitelist.contains(itemRegistryName)) return true;
+            ItemStack stack = new ItemStack(item, 1, metadata);
+            for (int id : OreDictionary.getOreIDs(stack)) {
+                String oreName = normalizeConfigEntry(OreDictionary.getOreName(id));
+                if (oreWhitelist.contains(oreName)) return true;
+            }
+        }
+        return false;
+    }
+
+    protected static String normalizeConfigEntry(String entry) {
+        if (entry == null) return "";
+        String normalized = entry.trim()
+            .toLowerCase(Locale.ROOT);
+        if (normalized.startsWith("tile.")) normalized = normalized.substring(5);
+        return normalized;
+    }
+
     protected int getMapDataByteFromArray(int[] a, float x, float xMax) {
         int i = iround(a.length * (x / xMax));
         return a[clampIndex(i, a.length)];
     }
 
     protected static int getMapDataByteForStack(ItemStack stack) {
+        if (stack == null) return -1;
+        Item item = stack.getItem();
+        Block block = item != null ? Block.getBlockFromItem(item) : null;
+        if (block != null && isBlockWhitelisted(block, stack.getItemDamage())) {
+            MapColor color = block.getMapColor(stack.getItemDamage());
+            if (color != null) return (color.colorIndex * 4) + 1;
+        }
         int[] ids = OreDictionary.getOreIDs(stack);
-        boolean oreLike = false;
-        String oreName = null;
         for (int id : ids) {
-            String name = OreDictionary.getOreName(id);
+            String name = normalizeConfigEntry(OreDictionary.getOreName(id));
+            if (!oreWhitelist.contains(name)) continue;
             if (oreIdToMapDataByte.containsKey(id)) {
                 int b = oreIdToMapDataByte.get(id);
                 // System.out.printf("SeismicRecorderTE.getMapDataByteForStack: known ore %s = %s\n", name, b);
                 return b;
             }
-            if (name.toLowerCase()
-                .contains("ore")) {
-                oreLike = true;
-                oreName = name;
+            if (name.contains("ore")) {
+                return 4 * (16 + name.hashCode() % (30 - 16));
             }
-        }
-        if (!oreLike) {
-            oreName = stack.getUnlocalizedName();
-            oreLike = oreName.toLowerCase()
-                .contains("ore");
-        }
-        if (oreLike) {
-            int b = 4 * (16 + oreName.hashCode() % (30 - 16));
-            // System.out.printf("SeismicRecorderTE.getMapDataByteForStack: ore-like %s = %s\n", oreName, b);
-            return b;
         }
         return -1;
     }
