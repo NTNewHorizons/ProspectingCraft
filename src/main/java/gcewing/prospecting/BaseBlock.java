@@ -223,7 +223,7 @@ public class BaseBlock<TE extends TileEntity> extends BlockContainer implements 
     public IBlockState getStateFromMeta(int meta) {
         IBlockState state = getDefaultState();
         int m = meta;
-        for (int i = numProperties - 1; i >= 0; i--) {
+        for (int i = 0; i < numProperties; i++) {
             Object[] values = propertyValues[i];
             int n = values.length;
             int k = m % n;
