@@ -223,7 +223,7 @@ public class BaseBlock<TE extends TileEntity> extends BlockContainer implements 
     public IBlockState getStateFromMeta(int meta) {
         IBlockState state = getDefaultState();
         int m = meta;
-        for (int i = numProperties - 1; i >= 0; i--) {
+        for (int i = 0; i < numProperties; i++) {
             Object[] values = propertyValues[i];
             int n = values.length;
             int k = m % n;
@@ -652,8 +652,9 @@ public class BaseBlock<TE extends TileEntity> extends BlockContainer implements 
     public void addCollisionBoxesToList(World world, BlockPos pos, IBlockState state, AxisAlignedBB clip, List result,
         Entity entity) {
         List<AxisAlignedBB> list = getGlobalCollisionBoxes(world, pos, state, entity);
-        if (list != null) for (AxisAlignedBB box : list) if (clip.intersectsWith(box)) result.add(box);
-        else super.addCollisionBoxesToList(world, pos.x, pos.y, pos.z, clip, result, entity);
+        if (list != null) {
+            for (AxisAlignedBB box : list) if (clip.intersectsWith(box)) result.add(box);
+        } else super.addCollisionBoxesToList(world, pos.x, pos.y, pos.z, clip, result, entity);
     }
 
     // public void addCollisionBoxesToList(World world, BlockPos pos, IBlockState state,

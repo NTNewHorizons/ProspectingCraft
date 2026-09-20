@@ -45,8 +45,17 @@ public class BlockPos {
         return new BlockPos(x + dir.getFrontOffsetX(), y + dir.getFrontOffsetY(), z + dir.getFrontOffsetZ());
     }
 
-    public boolean equals(BlockPos other) {
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof BlockPos)) return false;
+        BlockPos other = (BlockPos) obj;
         return this.x == other.x && this.y == other.y && this.z == other.z;
+    }
+
+    @Override
+    public int hashCode() {
+        return (this.y + this.z * 31) * 31 + this.x;
     }
 
     @Override

@@ -76,6 +76,7 @@ public class DetectorItem extends BaseItem {
     }
 
     protected boolean isTarget(ItemStack stack) {
+        if (stack == null) return false;
         int[] ids = OreDictionary.getOreIDs(stack);
         for (int id : ids) for (int i = 0; i < targetOreIDs.length; i++) if (id == targetOreIDs[i]) return true;
         return false;
